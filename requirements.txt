@@ -1,0 +1,11 @@
+psycopg2-binary 
+dj-database-url
+django
+crispy-bootstrap5 
+django-crispy-forms 
+django-widget-tweaks 
+opencv-python
+scikit-learn
+pandas
+whitenoise
+gunicorn

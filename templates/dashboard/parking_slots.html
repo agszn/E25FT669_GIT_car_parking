@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Parking Slots</h1>
+
+        <div class="row">
+            <!-- Available Slots -->
+            <div class="col-md-6">
+                <h2 class="text-success">Available Slots</h2>
+                <ul class="list-group" id="availableSlots">
+                    {% for slot in available_slots %}
+                        <li class="list-group-item slot-item available animate__animated animate__fadeInUp">
+                            <i class="bi bi-car-front text-success"></i>
+                            {{ slot.code }} - Row: {{ slot.row }} | Column: {{ slot.col }}
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item">No available slots.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Occupied Slots -->
+            <div class="col-md-6">
+                <h2 class="text-danger">Occupied Slots</h2>
+                <ul class="list-group" id="occupiedSlots">
+                    {% for slot in occupied_slots %}
+                        <li class="list-group-item slot-item occupied animate__animated animate__fadeInUp">
+                            <i class="bi bi-car-front text-danger"></i>
+                            {{ slot.code }} - Row: {{ slot.row }} | Column: {{ slot.col }}
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item">No occupied slots.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- AJAX to auto-update the parking slots -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function fetchParkingSlots() {
+            $.ajax({
+                url: "{% url 'parking_slots' %}",
+                type: "GET",
+                dataType: "json",
+                success: function(data) {
+                    // Update Available Slots
+                    let availableList = $('#availableSlots');
+                    availableList.empty(); // Clear the current list
+
+                    if (data.available_slots.length > 0) {
+                        data.available_slots.forEach(function(slot) {
+                            availableList.append(
+                                `<li class="list-group-item slot-item available animate__animated animate__fadeInUp">
+                                    <i class="bi bi-car-front text-success"></i>
+                                    ${slot.code} - Row: ${slot.row} | Column: ${slot.col}
+                                </li>`
+                            );
+                        });
+                    } else {
+                        availableList.append('<li class="list-group-item">No available slots.</li>');
+                    }
+
+                    // Update Occupied Slots
+                    let occupiedList = $('#occupiedSlots');
+                    occupiedList.empty(); // Clear the current list
+
+                    if (data.occupied_slots.length > 0) {
+                        data.occupied_slots.forEach(function(slot) {
+                            occupiedList.append(
+                                `<li class="list-group-item slot-item occupied animate__animated animate__fadeInUp">
+                                    <i class="bi bi-car-front text-danger"></i>
+                                    ${slot.code} - Row: ${slot.row} | Column: ${slot.col}
+                                </li>`
+                            );
+                        });
+                    } else {
+                        occupiedList.append('<li class="list-group-item">No occupied slots.</li>');
+                    }
+                }
+            });
+        }
+
+        // Fetch parking slots every 5 seconds
+        setInterval(fetchParkingSlots, 5000);
+    </script>
+{% endblock %}

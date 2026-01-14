@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NodeMCU Live Test</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 40px;
+            background: #f7f7f7;
+        }
+        #box {
+            background: white;
+            padding: 25px;
+            border-radius: 6px;
+            width: 300px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+        h1 { color: #333; }
+    </style>
+</head>
+<body>
+
+<div id="box">
+    <h3>Live NodeMCU Value:</h3>
+    <h1 id="value">Waiting...</h1>
+</div>
+
+<script>
+function fetchData() {
+    fetch("/nodemcu/update/")  // GET request
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("value").innerText = data.value;
+        })
+        .catch(err => console.log("Fetch error:", err));
+}
+
+// Update every second
+setInterval(fetchData, 1000);
+fetchData();
+</script>
+
+</body>
+</html>
